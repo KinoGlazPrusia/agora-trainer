@@ -1,0 +1,57 @@
+/* WRAPPER */
+.popup-wrapper {
+    padding: 1em;
+    box-sizing: border-box;
+
+    width: 400px;
+    aspect-ratio: 16/9;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+/* HEADER */
+.popup-header {
+    width: 100%;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.popup-header-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+/* ICONS */
+.settings-icon {
+    cursor: pointer;
+    color: darkgray;
+    transition: 300ms;
+}
+
+.settings-icon:hover {
+    color: rgb(67, 165, 165);
+}
+
+.record-icon {
+    color: darkred;
+    transition: 300ms;
+}
+
+/* CONTENT */
+.popup-content {
+    width: 100%;
+    height: 100%;
+
+    display: grid;
+    place-content: center;
+}
+
+.record-button {
+    display: grid;
+    place-content: center;
+}
