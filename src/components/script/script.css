@@ -2,6 +2,7 @@
 
 /* WRAPPER */
 .script-component-wrapper {
+    width: 100%;
     height: 75px;
 
     padding: 1em;
