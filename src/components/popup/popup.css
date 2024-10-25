@@ -6,7 +6,8 @@
     box-sizing: border-box;
 
     width: 400px;
-    aspect-ratio: 16/9;
+    height: fit-content;
+    max-height: 800px;
 
     display: flex;
     flex-direction: column;
@@ -80,18 +81,39 @@
 }
 
 /* CONTENT */
-.popup-content {
+script-component {
     width: 100%;
-    height: 100%;
+}
+
+.scripts {
+    padding: 1em;
+    box-sizing: border-box;
+
+    width: 100%;
+    height: fit-content;
+    max-height: 200px;
 
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
     gap: 1em;
+
+    overflow-y: auto;
+    overflow-x: visible;
 }
 
 .record-button {
     display: grid;
     place-content: center;
+}
+
+/* SCROLL BAR */
+::-webkit-scrollbar {
+    width: 0.5em;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d8d8d8;
+    border-radius: 100pt;
 }
