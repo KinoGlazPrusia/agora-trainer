@@ -1,0 +1,28 @@
+{
+  "name": "agora-trainer",
+  "version": "1.0.0",
+  "description": "Agora Trainer is a Chrome extension that automates website interactions for training purposes. It records these interactions as video tutorials with synchronized audio narration, helping users understand website functionality through guided demonstrations.",
+  "main": "public/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KinoGlazPrusia/agora-trainer.git"
+  },
+  "keywords": [
+    "chrome",
+    "extension",
+    "screen",
+    "recorder"
+  ],
+  "author": "Josep Martín Bolet",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KinoGlazPrusia/agora-trainer/issues"
+  },
+  "homepage": "https://github.com/KinoGlazPrusia/agora-trainer#readme",
+  "dependencies": {
+    "plain-reactive": "^1.1.8"
+  }
+}
