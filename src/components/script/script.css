@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+/* WRAPPER */
+.script-component-wrapper {
+    height: 75px;
+
+    padding: 1em;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+
+    border-radius: 5pt;
+
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* SCRIPT INFO */
+.script-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0.5em;
+}
+
+.script-description {
+    text-overflow: ellipsis;
+}
+
+.script-title {
+    font-weight: bold;
+}
+
+/* SCRIPT ACTIONS */
+.script-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.script-actions button {
+    appearance: none;
+    cursor: pointer;
+
+    padding: 0.5em;
+    box-sizing: border-box;
+
+    display: grid;
+    place-content: center;
+
+    border: none;
+    border-radius: 5pt;
+
+    color: darkgray;
+
+    background-color: transparent;
+
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0);
+
+    transition: 300ms;
+}
+
+.script-actions button:hover {
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* PLAY */
+.script-play-button:hover {
+    color: rgb(46, 134, 46);
+}
+
+.script-play-button.active {
+    color: rgb(46, 134, 46);
+}
+
+/* PAUSE */
+.script-stop-button:hover {
+    color: rgb(46, 94, 134);
+}
+
+.script-stop-button.active {
+    color: rgb(46, 94, 134);
+}
+
+/* RECORD */
+.script-record-button:hover {
+    color: rgb(134, 46, 46);
+}
+
+.script-record-button.active {
+    color: rgb(134, 46, 46);
+}
+
+/* SCRIPT PROGRESS */
+.script-progress-wrapper {
+    height: 100%;
+    width: 0.5em;
+}
+
+.script-progress-track {
+    height: 100%;
+    width: 0.5em;
+
+    border-radius: 5pt;
+    
+    background-color: rgb(236, 236, 236);
+
+    overflow: hidden;
+}
+
+.script-progress-thumb {
+    height: 100%;
+    width: 100%;
+
+    transform: translateY(-100%);
+
+    background-color: darkgrey;
+
+    transition: transform 1s;
+}
