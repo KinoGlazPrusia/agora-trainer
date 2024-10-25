@@ -23,12 +23,39 @@ class Popup extends PlainComponent {
                 <span class="script-drop-area-label">Drop a new script</span>
             </section>
 
-            <input type="file" class="script-input" accept=".txt" hidden>
+            <input type="file" class="script-input" accept=".json" hidden multiple>
 
-            <section class="popup-content">
-                <script-component></script-component>
+            <section class="scripts">
+                ${this.scripts.getState().map(script => {
+                    return script.outerHTML
+                }).join('\n')}
             </section>  
         `
+    }
+
+    listeners() {
+        this.$('.script-drop-area').onclick = () => this.$('.script-input').click()
+        this.$('.script-input').onchange = () => this.loadScript()
+    }
+
+    async loadScript() {
+        const fileInput =  this.$('.script-input')
+        Array.from(fileInput.files).forEach(file => {
+            const reader = new FileReader()
+            reader.onload = async (e) => {
+                const content = e.target.result
+                const data = JSON.parse(content)
+
+                const scriptComponent = document.createElement('script-component')
+                scriptComponent.dataset.script = JSON.stringify(data)
+
+                const scripts = this.scripts.getState()
+                scripts.push(scriptComponent)
+                this.scripts.setState(scripts)
+            }
+
+            reader.readAsText(file)
+        })
     }
 }
 
