@@ -103,6 +103,10 @@ script-component {
     overflow-x: visible;
 }
 
+.scripts.empty {
+    display: none;
+}
+
 .record-button {
     display: grid;
     place-content: center;
