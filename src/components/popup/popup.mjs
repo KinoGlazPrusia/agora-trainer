@@ -9,6 +9,7 @@ class Popup extends PlainComponent {
         this.isLoading = new PlainState(true, this)
         this.error = new PlainState(null, this)
         this.scripts = new PlainState([], this)
+        this.filter = new PlainState('', this)
 
         this.messenger = new Messenger()
     }
@@ -34,9 +35,7 @@ class Popup extends PlainComponent {
             
             <!-- SCRIPT LIST -->
             <section class="scripts ${this.scripts.getState().length === 0 ? 'empty' : ''}">
-                ${this.scripts.getState().map(script => {
-                    return script.outerHTML
-                }).join('\n')}
+               <script-list-component></script-list-component>
             </section>  
 
             <!-- SEARCH BAR -->
@@ -87,6 +86,21 @@ class Popup extends PlainComponent {
         const scripts = this.scripts.getState()
         scripts.push(scriptComponent)
         this.scripts.setState(scripts)
+        this.$('script-list-component').scripts.setState(scripts)
+    }
+
+    setFilter(filter) {
+        this.$('script-list-component').filter.setState(filter)
+    }
+
+    clearFilter() {
+        this.$('script-list-component').filter.setState('')
+    }
+
+    filteredScripts() {
+        if (this.filter.getState().length === 0) return this.scripts.getState()
+
+        return []
     }
 }
 
