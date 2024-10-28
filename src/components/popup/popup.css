@@ -64,6 +64,13 @@
     font-size: 1.2em;
 }
 
+.script-drop-area-info {
+    user-select: none;
+
+    color: darkgray;
+    font-size: 0.8em;
+}
+
 /* ICONS */
 .settings-icon {
     cursor: pointer;
@@ -97,7 +104,7 @@ script-component {
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
-    gap: 1em;
+    gap: 1.2em;
 
     overflow-y: auto;
     overflow-x: visible;
