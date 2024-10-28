@@ -20,6 +20,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 })
 
 async function handleLoadedScript(request) {
+    //clearStorage()
+
     try {
         if (await storageIsEmpty()) {
             await initializeStorage('scripts', [request.data])
@@ -82,12 +84,14 @@ async function addScript(data) {
     return new Promise(resolve => {
         chrome.storage.local.get(['scripts'], (res) => {
             const scripts = res.scripts
-            console.log("PREV SCRIPTS", scripts)
             scripts.push(data)
-            console.log("UPDATED SCRIPTS", scripts)
             chrome.storage.local.set({['scripts']: scripts}, () => {
                 resolve()
             })
         })
     })
+}
+
+function clearStorage() {
+    chrome.storage.local.clear()
 }
