@@ -20,29 +20,35 @@ class Script extends PlainComponent {
     }
 
     template() {
+        // <span class="script-target">${this.script.getState().target}</span>
         return `
-            <!-- SCRIPT INFO -->
-            <div class="script-info">
-                <span class="script-title">${this.script.getState().name}</span>
-                <span class="script-description">${this.script.getState().metadata.description}</span>
+            <div class="left">
+                <!-- SCRIPT INFO -->
+                <div class="script-info">
+                    <span class="script-title">${this.script.getState().name}</span>
+                    <span class="script-description">${this.script.getState().metadata.description}</span>
+                </div>
             </div>
 
-            <!-- SCRIPT ACTIONS -->
-            <div class="script-actions">
-                <button class="script-play-button ${this.status.getState() === this.STATUS.IS_PLAYING ? 'active' : ''}">
-                    <span class="play-icon material-symbols-outlined">play_circle</span>
-                </button>
-                <button class="script-stop-button ${this.status.getState() === this.STATUS.IS_PAUSED ? 'active' : ''}">
-                    <span class="stop-icon material-symbols-outlined">stop_circle</span>
-                </button>
-                <button class="script-record-button ${this.status.getState() === this.STATUS.IS_RECORDING ? 'active' : ''}">
-                    <span class="record-icon material-symbols-outlined">screen_record</span>
-                </button>
-            </div>
+            <div class="right">
+                <!-- SCRIPT ACTIONS -->
+                <div class="script-actions">
 
-            <!-- SCRIPT PROGRESS -->
-            <div class="script-progress-track">
-                <div class="script-progress-thumb"></div>
+                    <button class="script-play-button ${this.status.getState() === this.STATUS.IS_PLAYING ? 'active' : ''}">
+                        <span class="play-icon material-symbols-outlined">play_circle</span>
+                    </button>
+                    <button class="script-stop-button ${this.status.getState() === this.STATUS.IS_PAUSED ? 'active' : ''}">
+                        <span class="stop-icon material-symbols-outlined">stop_circle</span>
+                    </button>
+                    <button class="script-record-button ${this.status.getState() === this.STATUS.IS_RECORDING ? 'active' : ''}">
+                        <span class="record-icon material-symbols-outlined">screen_record</span>
+                    </button>
+                </div>
+
+                <!-- SCRIPT PROGRESS -->
+                <div class="script-progress-track">
+                    <div class="script-progress-thumb"></div>
+                </div>
             </div>
         `
     }
@@ -54,7 +60,6 @@ class Script extends PlainComponent {
     }
 
     handlePlay() {
-        console.log(this.script.getState())
         this.status.setState(this.STATUS.IS_PLAYING)
         this.player.play(this.script.getState(), this.currentStep.getState(), this)
     }
