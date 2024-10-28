@@ -1,0 +1,194 @@
+{
+    "name": "Update a course",
+    "target": "http://localhost:8000",
+    "metadata": {
+        "version": "1.0",
+        "author": "UPC",
+        "description": "We'll see how to update a course."
+    },
+    "steps": [
+        {
+            "action": "SETUP_CURSOR",
+            "args": [],
+            "delay": 0,
+            "wait": 0,
+            "voiceover": "Bienvenidos a la plataforma Ágora, hoy vamos a aprender cómo crear un curso"
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": ["#content-menu-button"],
+            "delay": 500,
+            "wait": 500, 
+            "voiceover": "Movemos el cursor a la opción Pages del menú"
+        },
+        {
+            "action": "CLICK_ON",
+            "args": ["#content-menu-button"],
+            "delay": 0,
+            "wait": 1500,
+            "voiceover": "Hacemos clic"
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": ["#content-menu .dropdown-menu:nth-child(2)"],
+            "delay": 0,
+            "wait": 1000,
+            "voiceover": "Movemos el cursor a la opción Manage Pages"
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": ["#content-menu-button"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": ""
+        },
+        {
+            "action": "CLICK_ON",
+            "args": ["#content-menu-button"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Volvemos a hacer clic sobre la opción Pages del menú para cerrar el desplegable" 
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": ["#s_list_elements-search-query"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Movemos el cursor a la barra de búsqueda"
+        },
+        {
+            "action": "WRITE_ON_TEXT_INPUT",
+            "args": ["#s_list_elements-search-query", "Esto es una breve demostración..."],
+            "delay": 500,
+            "wait": 1500,
+            "voiceover": "Escribimos en la barra de búsqueda. Es broma, esto solo era un test. Vamos a crear el curso"
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": [".dropdown-toggle.full"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Movemos de nuevo el cursor a la opción Website en la parte superior izquierda"
+        },
+        {
+            "action": "CLICK_ON",
+            "args": [".dropdown-toggle.full"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Clicamos"
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": [".dropdown-item[data-action-id='288']"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Seleccionamos la opción Student Catalogues y clicamos sobre ella"
+        },
+        {
+            "action": "CLICK_ON",
+            "args": [".dropdown-item[data-action-id='288']"],
+            "delay": 500,
+            "wait": 500,
+            "voiceover": "Esto nos llevará a la página de cursos"
+        },
+        {
+            "action": "SETUP_CURSOR",
+            "args": [],
+            "delay": 0,
+            "wait": 1500,
+            "voiceover": ""
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": [".btn.btn-primary.o_list_button_add"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Clicamos sobre el botón de crear"
+        },
+        {
+            "action": "CLICK_ON",
+            "args": [".btn.btn-primary.o_list_button_add"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Esto nos desplegará un formulario para crear un nuevo curso"
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": [".oe_title input"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Escribimos el nombre del curso aquí"
+        },
+        {
+            "action": "WRITE_ON_TEXT_INPUT",
+            "args": [".oe_title input", "Curs de prova"],
+            "delay": 500,
+            "wait": 1500,
+            "voiceover": ""
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": ["#o_field_input_15"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "A continuación escribimos la descripción del curso"
+        },
+        {
+            "action": "WRITE_ON_TEXT_INPUT",
+            "args": ["#o_field_input_15", "Descripció breu del curs enregistrat..."],
+            "delay": 500,
+            "wait": 1500,
+            "voiceover": ""
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": ["#o_field_input_16"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Seleccionamos a la persona de contacto del curso"
+        },
+        {
+            "action": "CLICK_ON",
+            "args": ["#o_field_input_16"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": ""
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": ["#ui-id-9"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": ""
+        },
+        {
+            "action": "CLICK_ON",
+            "args": ["#ui-id-9"],
+            "delay": 500,
+            "wait": 500,
+            "voiceover": ""
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": ["#o_field_input_17"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Escribimos el campo de estudio del curso"
+        },
+        {
+            "action": "WRITE_ON_TEXT_INPUT",
+            "args": ["#o_field_input_17", "Enginyeria telemàtica"],
+            "delay": 500,
+            "wait": 1500,
+            "voiceover": "Ingeniería telemática"
+        },
+        {
+            "action": "MOVE_CURSOR_TO",
+            "args": [".o_form_button_save"],
+            "delay": 0,
+            "wait": 500,
+            "voiceover": "Le damos al botón de Save para guardar el nuevo curso... Y de momento eso sería todo."
+        }
+    ]
+}
+
