@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Agora Trainer",
     "version": "1.0",
-    "permissions": ["activeTab", "scripting", "storage"],
+    "permissions": ["activeTab", "scripting", "storage", "webNavigation", "tabs"],
     "host_permissions": ["http://*/*","https://*/*"],
     "description": "An automated video learning tips generator",
     "background": {
