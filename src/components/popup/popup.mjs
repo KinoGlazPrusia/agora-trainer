@@ -29,12 +29,18 @@ class Popup extends PlainComponent {
             </section>
 
             <input type="file" class="script-input" accept=".json" hidden multiple>
+
             
+            
+            <!-- SCRIPT LIST -->
             <section class="scripts ${this.scripts.getState().length === 0 ? 'empty' : ''}">
                 ${this.scripts.getState().map(script => {
                     return script.outerHTML
                 }).join('\n')}
             </section>  
+
+            <!-- SEARCH BAR -->
+            <searchbar-component></searchbar-component>
         `
     }
 
