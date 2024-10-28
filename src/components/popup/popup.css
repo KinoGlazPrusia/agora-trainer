@@ -47,14 +47,14 @@
     align-items: center;
     gap: 0.5em;
 
-    border: 2px dashed darkgray;
+    border: 2px dashed #d0d7de;
     border-radius: 5pt;
 
     transition: 300ms;
 }
 
 .script-drop-area:hover {
-    background-color: rgb(236, 236, 236);
+    background-color: #f6f8fa;
 }
 
 .script-drop-area-label {
@@ -70,10 +70,18 @@
     font-size: 0.8em;
 }
 
+/* SEARCHBAR */
+searchbar-component {
+    width: 100%;
+
+    padding-inline: 1em;
+    box-sizing: border-box;
+}
+
 /* ICONS */
 .settings-icon {
     cursor: pointer;
-    color: darkgray;
+    color: #d0d7de;
     transition: 300ms;
 }
 
