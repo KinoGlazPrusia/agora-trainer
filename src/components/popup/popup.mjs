@@ -17,7 +17,7 @@ class Popup extends PlainComponent {
         return `
             <!-- HEADER -->
             <header class="popup-header">
-                <span class="popup-header-title">Welcome to Agora Trainer!</span>
+                <span class="popup-header-title">Welcome to <b>Agora Trainer</b> !</span>
                 <span class="settings-icon material-symbols-outlined">settings</span>
             </header>
 
