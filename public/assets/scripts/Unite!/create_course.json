@@ -1,5 +1,6 @@
 {
     "name": "Create a course",
+    "target": "http://localhost:8000",
     "metadata": {
         "version": "1.0",
         "author": "UPC",
