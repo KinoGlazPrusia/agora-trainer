@@ -1,4 +1,6 @@
 import { PlainComponent, PlainState } from "../../../node_modules/plain-reactive/src/index.js"
+import { Messenger } from "../../Messenger.mjs"
+import { MESSAGE } from "../../Message.mjs"
 
 class Popup extends PlainComponent {
     constructor() {
@@ -7,6 +9,8 @@ class Popup extends PlainComponent {
         this.isLoading = new PlainState(true, this)
         this.error = new PlainState(null, this)
         this.scripts = new PlainState([], this)
+
+        this.messenger = new Messenger()
     }
 
     template() {
@@ -21,6 +25,7 @@ class Popup extends PlainComponent {
             <section class="script-drop-area">
                 <span class="add-script-icon material-symbols-outlined">post_add</span>
                 <span class="script-drop-area-label">Drop a new script</span>
+                <span class="script-drop-area-info">( only JSON files are accepted )</span>
             </section>
 
             <input type="file" class="script-input" accept=".json" hidden multiple>
@@ -34,11 +39,23 @@ class Popup extends PlainComponent {
     }
 
     listeners() {
+        document.addEventListener('DOMContentLoaded', async () => await this.loadScripts())
         this.$('.script-drop-area').onclick = () => this.$('.script-input').click()
-        this.$('.script-input').onchange = () => this.loadScript()
+        this.$('.script-input').onchange = () => this.uploadScript()
     }
 
-    async loadScript() {
+    async loadScripts() {
+        return new Promise(resolve => {
+            chrome.storage.local.get(['scripts'], (res) => {
+                res.scripts.forEach(script => {
+                    this.addScript(script)
+                })
+                resolve()
+            })
+        })
+    }
+
+    async uploadScript() {
         const fileInput =  this.$('.script-input')
         Array.from(fileInput.files).forEach(file => {
             const reader = new FileReader()
@@ -46,16 +63,24 @@ class Popup extends PlainComponent {
                 const content = e.target.result
                 const data = JSON.parse(content)
 
-                const scriptComponent = document.createElement('script-component')
-                scriptComponent.dataset.script = JSON.stringify(data)
+                // Script saving to storage through the service worker
+                this.messenger.send({message: MESSAGE.SCRIPT_LOADED, data: data}, (response) => console.log(response))
 
-                const scripts = this.scripts.getState()
-                scripts.push(scriptComponent)
-                this.scripts.setState(scripts)
+                // We add a new script component to the DOM
+                this.addScript(data)
             }
 
             reader.readAsText(file)
         })
+    }
+
+    addScript(data) {
+        const scriptComponent = document.createElement('script-component')
+        scriptComponent.dataset.script = JSON.stringify(data)
+
+        const scripts = this.scripts.getState()
+        scripts.push(scriptComponent)
+        this.scripts.setState(scripts)
     }
 }
 
