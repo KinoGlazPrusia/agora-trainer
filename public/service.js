@@ -1,18 +1,19 @@
 import { MESSAGE } from "../src/Message.mjs"
 
-chrome.runtime.onStartup.addListener(() => {
-    chrome.storage.local.get('scripts', (res) => {
-        console.log("Initial Storage", res)
-    })
-})
-
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     let response = {message: ''}
 
-    if (request.message === MESSAGE.SCRIPT_LOADED) {
-        handleLoadedScript(request)
-        response.message = "Script loaded"
+    switch (request.message) {
+
+        case MESSAGE.NAVIGATE_TO_TARGET:
+            handleTarget(request)
+            response.message = "Navigated to target"
+            break
+
+        case MESSAGE.SCRIPT_LOADED:
+            handleLoadedScript(request)
+            response.message = "Script loaded"
+            break
     }
 
     sendResponse(response)
@@ -38,7 +39,22 @@ async function handleLoadedScript(request) {
 }
 
 async function handleTarget(request) {
-    
+    await navigateFromTo(request.data.current, request.data.target)
+}
+
+async function navigateFromTo(current, target) {
+    return new Promise(resolve => {
+        chrome.tabs.update(current, {url: target}, () => {
+            const contentLoadedListener = (tabId, changeInfo, tab) => {
+                if (tab.id === current && changeInfo.status === "complete") {
+                    console.log("Tab updated", tab)
+                    chrome.tabs.onUpdated.removeListener(contentLoadedListener)
+                    resolve()
+                }
+            }
+            chrome.tabs.onUpdated.addListener(contentLoadedListener)
+        })
+    })
 }
 
 async function storageIsEmpty() {
