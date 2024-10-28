@@ -1,16 +1,25 @@
 import { Narrator } from "./Narrator.mjs"
 import { ACTION } from "./Action.mjs"
 
+import { Messenger } from "./Messenger.mjs"
+import { MESSAGE } from "./Message.mjs"
+
 export class Player {
     constructor() {
         this.pause = false
         this.narrator = new Narrator()
+        this.messenger = new Messenger()
     }
 
     // This function returns the ID of the active tab.
     async getCurrentTabId() {
         const currentTab = await chrome.tabs.query({active: true, currentWindow: true})
         return currentTab[0].id
+    }
+
+    async getCurrentTabUrl() {
+        const currentTab = await chrome.tabs.query({active: true, currentWindow: true})
+        return currentTab[0].url
     }
 
     async executeAction(callback, args = []) {
@@ -23,7 +32,31 @@ export class Player {
         })
     }
 
+    async navigateToTarget(targetURL) {
+        
+        const tabId = await this.getCurrentTabId()
+        const tabUrl = await this.getCurrentTabUrl()
+
+        if (targetURL === tabUrl) return
+        
+        return new Promise((resolve, reject) => {
+            chrome.tabs.update(tabId, {url: targetURL}, () => {
+                if (chrome.runtime.lastError) {
+                    reject(chrome.runtime.lastError)
+                } else {
+                    console.log("Resolved")
+                    resolve()
+                }
+            })
+        })
+    }
+
     async play(script, from = 0, component = null) {
+        //await this.navigateToTarget(script.target)
+
+        /* chrome.runtime.sendMessage({x: 10, y: 20}, (response) => {
+            console.log(response.message)
+        }) */
         // This scripts creation could be automated with user natural input, developing a kind of "script editor" UI.
         const steps = script.steps
         let index = 0
