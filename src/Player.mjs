@@ -33,30 +33,31 @@ export class Player {
     }
 
     async navigateToTarget(targetURL) {
-        
         const tabId = await this.getCurrentTabId()
         const tabUrl = await this.getCurrentTabUrl()
 
-        if (targetURL === tabUrl) return
+
+        if (targetURL.replace(/\/$/, '') === tabUrl.replace(/\/$/, '')) return
+
+        console.log("TAB URL:", tabUrl.replace(/\/$/, ''), "TARGET:", targetURL.replace(/\/$/, ''))
+
         
-        return new Promise((resolve, reject) => {
-            chrome.tabs.update(tabId, {url: targetURL}, () => {
-                if (chrome.runtime.lastError) {
-                    reject(chrome.runtime.lastError)
-                } else {
-                    console.log("Resolved")
-                    resolve()
-                }
+        return new Promise(resolve => {
+            this.messenger.send({message: MESSAGE.NAVIGATE_TO_TARGET, data: {current: tabId, target: targetURL}}, (response) => {
+                console.log('Response received:', response)
+                resolve()
             })
         })
     }
 
     async play(script, from = 0, component = null) {
-        //await this.navigateToTarget(script.target)
+        // We only redirect if the script is not already playing
+        if (from === 0) {
+            await this.navigateToTarget(script.target) // Not awaiting (some issue with the async/await)
+            // Temporary solution:
+            await this.executeAction(ACTION.WAIT, [1000]) // Weird bug (it works but idk why)
+        }
 
-        /* chrome.runtime.sendMessage({x: 10, y: 20}, (response) => {
-            console.log(response.message)
-        }) */
         // This scripts creation could be automated with user natural input, developing a kind of "script editor" UI.
         const steps = script.steps
         let index = 0
