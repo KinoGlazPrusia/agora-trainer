@@ -4,6 +4,8 @@ import { ACTION } from "./Action.mjs"
 import { Messenger } from "./Messenger.mjs"
 import { MESSAGE } from "./Message.mjs"
 
+import { getCurrentTabId, getCurrentTabUrl } from "./utils/tabs.utils.js"
+
 export class Player {
     constructor() {
         this.pause = false
@@ -11,19 +13,8 @@ export class Player {
         this.messenger = new Messenger()
     }
 
-    // This function returns the ID of the active tab.
-    async getCurrentTabId() {
-        const currentTab = await chrome.tabs.query({active: true, currentWindow: true})
-        return currentTab[0].id
-    }
-
-    async getCurrentTabUrl() {
-        const currentTab = await chrome.tabs.query({active: true, currentWindow: true})
-        return currentTab[0].url
-    }
-
     async executeAction(callback, args = []) {
-        const tabId = await this.getCurrentTabId()
+        const tabId = await getCurrentTabId()
 
         await chrome.scripting.executeScript({
             target: { tabId },
@@ -33,8 +24,8 @@ export class Player {
     }
 
     async navigateToTarget(targetURL) {
-        const tabId = await this.getCurrentTabId()
-        const tabUrl = await this.getCurrentTabUrl()
+        const tabId = await getCurrentTabId()
+        const tabUrl = await getCurrentTabUrl()
 
 
         if (targetURL.replace(/\/$/, '') === tabUrl.replace(/\/$/, '')) return
@@ -97,6 +88,12 @@ export class Player {
 
     stop() {
         this.pause = true
+    }
+
+    async record() {
+        this.messenger.send({message: MESSAGE.RECORDING__STARTED}, (response) => {
+            console.log('Response received:', response)
+        })
     }
 
 }
