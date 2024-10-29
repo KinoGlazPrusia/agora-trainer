@@ -3,7 +3,7 @@ import { Player } from "../../Player.mjs"
 import { Recorder } from "../../Recorder.mjs"
 import { Messenger } from "../../Messenger.mjs"
 import { ACTION } from "../../Action.mjs"
-import { MESSAGE } from "../../Message.mjs"
+import { Message } from "../../Message.mjs"
 
 class Script extends PlainComponent {
     constructor() {

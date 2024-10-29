@@ -1,16 +1,16 @@
-import { MESSAGE } from "../src/Message.mjs"
+import { Message } from "../src/Message.mjs"
 
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
     let response = {message: ''}
 
     switch (request.message) {
 
-        case MESSAGE.NAVIGATE_TO_TARGET:
+        case Message.NAVIGATE_TO_TARGET:
             await handleTarget(request)
             response.message = "Navigated to target"
             break
 
-        case MESSAGE.SCRIPT_LOADED:
+        case Message.SCRIPT_LOADED:
             await handleLoadedScript(request)
             response.message = "Script loaded"
             break

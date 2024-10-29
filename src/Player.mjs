@@ -2,7 +2,7 @@ import { Narrator } from "./Narrator.mjs"
 import { ACTION } from "./Action.mjs"
 
 import { Messenger } from "./Messenger.mjs"
-import { MESSAGE } from "./Message.mjs"
+import { Message } from "./Message.mjs"
 
 import { getCurrentTabId, getCurrentTabUrl } from "./utils/tabs.utils.js"
 
@@ -34,7 +34,7 @@ export class Player {
 
         
         return new Promise(resolve => {
-            this.messenger.send({message: MESSAGE.NAVIGATE_TO_TARGET, data: {current: tabId, target: targetURL}}, (response) => {
+            this.messenger.send({message: Message.NAVIGATE_TO_TARGET, data: {current: tabId, target: targetURL}}, (response) => {
                 console.log('Response received:', response)
                 resolve()
             })
@@ -91,7 +91,7 @@ export class Player {
     }
 
     async record() {
-        this.messenger.send({message: MESSAGE.RECORDING__STARTED}, (response) => {
+        this.messenger.send({message: Message.RECORDING__STARTED}, (response) => {
             console.log('Response received:', response)
         })
     }

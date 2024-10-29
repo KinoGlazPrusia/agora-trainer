@@ -1,6 +1,6 @@
 import { PlainComponent, PlainState } from "../../../node_modules/plain-reactive/src/index.js"
 import { Messenger } from "../../Messenger.mjs"
-import { MESSAGE } from "../../Message.mjs"
+import { Message } from "../../Message.mjs"
 
 class Popup extends PlainComponent {
     constructor() {
@@ -69,7 +69,7 @@ class Popup extends PlainComponent {
                 const data = JSON.parse(content)
 
                 // Script saving to storage through the service worker
-                this.messenger.send({message: MESSAGE.SCRIPT_LOADED, data: data}, (response) => console.log(response))
+                this.messenger.send({message: Message.SCRIPT_LOADED, data: data}, (response) => console.log(response))
 
                 // We add a new script component to the DOM
                 this.addScript(data)

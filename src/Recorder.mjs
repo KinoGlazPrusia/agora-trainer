@@ -1,6 +1,6 @@
 import { Messenger } from "./Messenger.mjs"
-import { MESSAGE } from "./Message.mjs"
-import { CONTEXT } from "./Context.mjs"
+import { Message } from "./Message.mjs"
+import { Context } from "./Context.mjs"
 import { getCurrentTabId } from "./utils/tabs.utils.js"
 
 export class Recorder {
@@ -29,8 +29,8 @@ export class Recorder {
         // We have to execute this in another context to avoid cancelling the recording
         // if the popup is closed
         this.messenger.send({
-            message: MESSAGE.START_RECORDING, 
-            target: CONTEXT.OFFSCREEN_DOCUMENT, 
+            message: Message.START_RECORDING, 
+            target: Context.OFFSCREEN_DOCUMENT, 
             data: streamId,
             filename: filename
         }, () => null)
