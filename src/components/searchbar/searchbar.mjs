@@ -4,7 +4,7 @@ class Searchbar extends PlainComponent {
     constructor() {
         super('searchbar-component', '../src/components/searchbar/searchbar.css')
 
-        this.queryTimer = 500
+        this.queryTimer = 300
         this.qeuryDebounce = new PlainState({last: 0, elapsed: 0}, this)
         this.queryCache = new PlainState([], this)
     }
@@ -24,13 +24,13 @@ class Searchbar extends PlainComponent {
         const [time, elapsed] = this.elapsedTime()
 
         this.qeuryDebounce.setState({last: time, elapsed: elapsed}, false)
-        console.log(this.qeuryDebounce.getState())
 
         if (this.qeuryDebounce.getState().elapsed > this.queryTimer) {
             this.parentComponent.setFilter(query)
             return 
         }
 
+        // Delayed search after 300ms (in case the user stops typing after typing too quickly)
         setTimeout(() => {
             const [time, elapsed] = this.elapsedTime()
             if (elapsed > this.queryTimer) {
