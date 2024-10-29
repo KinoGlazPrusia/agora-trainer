@@ -1,4 +1,6 @@
 export const MESSAGE = {
     NAVIGATE_TO_TARGET: 0,
-    SCRIPT_LOADED: 1
+    SCRIPT_LOADED: 1,
+    START_RECORDING: 2,
+    STOP_RECORDING: 3,
 }
