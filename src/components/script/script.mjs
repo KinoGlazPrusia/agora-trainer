@@ -1,12 +1,18 @@
 import { PlainComponent, PlainState } from "../../../node_modules/plain-reactive/src/index.js"
 import { Player } from "../../Player.mjs"
+import { Recorder } from "../../Recorder.mjs"
+import { Messenger } from "../../Messenger.mjs"
 import { ACTION } from "../../Action.mjs"
+import { MESSAGE } from "../../Message.mjs"
 
 class Script extends PlainComponent {
     constructor() {
         super('script-component', '../src/components/script/script.css')
 
         this.player = new Player()
+        this.recorder = new Recorder()
+        this.messenger = new Messenger()
+
         this.STATUS = {
             IS_INACTIVE: -1,
             IS_PLAYING: 0,
@@ -65,12 +71,27 @@ class Script extends PlainComponent {
     }
 
     handleStop() {
+        // If status is already paused, then it becomes inactive
+        if (this.status.getState() === this.STATUS.IS_PAUSED) {
+            this.handleReset()
+            return
+        }
+
+        // If the status is inactive, nothing happens
+        if (this.status.getState() == this.STATUS.IS_INACTIVE) return 
+
         this.status.setState(this.STATUS.IS_PAUSED)
         this.player.stop()
     }
 
+    handleReset() {
+        this.status.setState(this.STATUS.IS_INACTIVE)
+        this.currentStep.setState(0, false)
+    }
+
     handleRecord() {
         this.status.setState(this.STATUS.IS_RECORDING)
+        this.recorder.setup(this.script.getState().name)
     }
 
     setCurrentStep(index) {
