@@ -8,13 +8,27 @@ chrome.runtime.onMessage.addListener(async (request) => {
         switch (request.message) {
 
             case Message.START_RECORDING:
-                await handleRecord(request)
+                await handleStartRecord(request)
                 break;
+
+            case Message.STOP_RECORDING:
+                await handleStopRecord()
         }
     }
 })
 
-async function handleRecord(request) {
-    const recorder = new Recorder()
+const recorder = new Recorder()
+
+async function handleStartRecord(request) {
     recorder.start(request.data, request.filename)
+}
+
+async function handleStopRecord() {
+    console.log('Request to stop recording')
+    if (!recorder.isRecording) {
+        console.error('Recording is not active')
+        return 
+    }
+
+    recorder.stop()
 }
