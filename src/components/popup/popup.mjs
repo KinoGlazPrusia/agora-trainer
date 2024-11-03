@@ -1,6 +1,7 @@
 import { PlainComponent, PlainState } from "../../../node_modules/plain-reactive/src/index.js"
-import { Messenger } from "../../Messenger.mjs"
 import { Message } from "../../Message.mjs"
+import { Context } from "../../Context.mjs"
+import { StorageAPI } from "../../api/storage.api.js"
 
 class Popup extends PlainComponent {
     constructor() {
@@ -10,8 +11,8 @@ class Popup extends PlainComponent {
         this.error = new PlainState(null, this)
         this.scripts = new PlainState([], this)
         this.filter = new PlainState('', this)
-
-        this.messenger = new Messenger()
+        
+        this.storage = new StorageAPI()
     }
 
     template() {
@@ -31,8 +32,6 @@ class Popup extends PlainComponent {
 
             <input type="file" class="script-input" accept=".json" hidden multiple>
 
-            
-            
             <!-- SCRIPT LIST -->
             <section class="scripts ${this.scripts.getState().length === 0 ? 'empty' : ''}">
                <script-list-component></script-list-component>
@@ -47,6 +46,10 @@ class Popup extends PlainComponent {
         document.addEventListener('DOMContentLoaded', async () => await this.loadScripts())
         this.$('.script-drop-area').onclick = () => this.$('.script-input').click()
         this.$('.script-input').onchange = () => this.uploadScript()
+    }
+
+    messageListeners() {
+        // Implement message listeners here (mainly to update UI when playing, etc, based on play state)
     }
 
     async loadScripts() {
@@ -69,7 +72,7 @@ class Popup extends PlainComponent {
                 const data = JSON.parse(content)
 
                 // Script saving to storage through the service worker
-                this.messenger.send({message: Message.SCRIPT_LOADED, data: data}, (response) => console.log(response))
+                this.storage.handleLoadedScript(data)
 
                 // We add a new script component to the DOM
                 this.addScript(data)
@@ -81,6 +84,7 @@ class Popup extends PlainComponent {
 
     addScript(data) {
         const scriptComponent = document.createElement('script-component')
+        scriptComponent.id = `script-component-${this.scripts.getState().length + 1}`
         scriptComponent.dataset.script = JSON.stringify(data)
 
         const scripts = this.scripts.getState()
