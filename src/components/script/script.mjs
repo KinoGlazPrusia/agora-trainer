@@ -2,8 +2,9 @@ import { PlainComponent, PlainState } from "../../../node_modules/plain-reactive
 import { Player } from "../../Player.mjs"
 import { Recorder } from "../../Recorder.mjs"
 import { Messenger } from "../../Messenger.mjs"
-import { ACTION } from "../../Action.mjs"
+import { Action } from "../../Action.mjs"
 import { Message } from "../../Message.mjs"
+import { Context } from "../../Context.mjs"
 
 class Script extends PlainComponent {
     constructor() {
@@ -66,13 +67,35 @@ class Script extends PlainComponent {
     }
 
     handlePlay() {
-        this.status.setState(this.STATUS.IS_PLAYING)
-        this.player.play(this.script.getState(), this.currentStep.getState(), this)
+        chrome.runtime.sendMessage(new Message(
+            Message.PLAY, 
+            Context.PLAYER_SERVICE, 
+            {script: this.dataset.script }
+        ).get())
+        
+        /* chrome.windows.create({
+            url: "public/popup.html", // Your secondary popup HTML file
+            type: "popup",
+            width: 400,
+            height: 150
+        }) */
+        // this.status.setState(this.STATUS.IS_PLAYING)
+        // this.player.play(this.script.getState(), this.currentStep.getState(), this)
+        /* console.log("HANDLE PLAY")
+        const message = new Message(
+            Message.START_PLAYING,
+            Context.BACKGROUND,
+            {script: JSON.stringify(this.script.getState())} // Los mensajes se pasan serializados por lo tanto habría que hacer un stringify
+        ).get()
+
+        console.log("MESSAGE", message)
+
+        this.messenger.send(message) */
     }
 
     handleStop() {
         // If status is already paused, then it becomes inactive
-        if (this.status.getState() === this.STATUS.IS_PAUSED) {
+        /* if (this.status.getState() === this.STATUS.IS_PAUSED) {
             this.handleReset()
             return
         }
@@ -81,7 +104,12 @@ class Script extends PlainComponent {
         if (this.status.getState() == this.STATUS.IS_INACTIVE) return 
 
         this.status.setState(this.STATUS.IS_PAUSED)
-        this.player.stop()
+        this.player.stop() */
+
+        chrome.runtime.sendMessage(new Message(
+            Message.PAUSE, 
+            Context.PLAYER_SERVICE
+        ).get())
     }
 
     handleReset() {
@@ -90,14 +118,21 @@ class Script extends PlainComponent {
     }
 
     handleRecord() {
-        this.status.setState(this.STATUS.IS_RECORDING)
-        this.recorder.setup(this.script.getState().name)
+        chrome.runtime.sendMessage(new Message(
+            Message.RECORD, 
+            Context.RECORDER_SERVICE,
+            {scriptName: this.script.getState().name}
+        ).get())
+
+        this.handlePlay()
     }
 
     setCurrentStep(index) {
         this.currentStep.setState(index, false)
-     
+        
+        // If the current step is greater than or equal to the number of steps, then reset the script
         if (this.currentStep.getState() >= this.script.getState().steps.length) {
+            this.recorder.requestStop()
             this.reset()
             return
         }
@@ -128,7 +163,7 @@ class Script extends PlainComponent {
     }
 
     parseAction(action) {
-        return ACTION[action]
+        return Action[action]
     }
 }
 
