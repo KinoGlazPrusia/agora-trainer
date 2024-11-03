@@ -1,28 +1,80 @@
 import { Narrator } from "./Narrator.mjs"
-import { ACTION } from "./Action.mjs"
-
-import { Messenger } from "./Messenger.mjs"
-import { Message } from "./Message.mjs"
-
-import { getCurrentTabId, getCurrentTabUrl } from "./utils/tabs.utils.js"
+import { Action } from "./Action.mjs"
+import { getCurrentTabId } from "./utils/tabs.utils.js" 
 
 export class Player {
-    constructor() {
-        this.pause = false
+    constructor(controller) {
+        this.controller = controller
+
+        this.isPlaying = false
+        this.isPaused = false
+        this.isStopped = true
+
+        this.step = 0
+        this.script = null
+
         this.narrator = new Narrator()
-        this.messenger = new Messenger()
     }
 
     async executeAction(callback, args = []) {
-        const tabId = await getCurrentTabId()
-
-        await chrome.scripting.executeScript({
-            target: { tabId },
-            func: callback,
-            args: [...args]
-        })
+        await callback(...args)
     }
 
+    async play(script, from = 0, component = null) {
+        // We only redirect if the script is not already playing
+        /* if (from === 0) {
+            await this.navigateToTarget(script.target) // Not awaiting (some issue with the async/await)
+            // Temporary solution:
+            await this.executeAction(ACTION.WAIT, [1000]) // Weird bug (it works but idk why)
+        } */
+
+        // This scripts creation could be automated with user natural input, developing a kind of "script editor" UI.
+        const steps = script.steps
+        let index = 0
+        // We're using a 'for' because forEach cannot handle 'awaits'
+        for (const {action, args, delay, wait, voiceover} of steps) {
+            if (this.isPaused) {
+                console.log("Script paused...")
+                break
+            }
+            
+            //console.log("Script started:", voiceover)
+            if (index >= from) {
+                if (delay > 0) {
+                    console.log("Delaying for: ", delay)
+                    await this.executeAction(Action.WAIT, [delay])
+                    console.log("Delay finished...")
+                }
+    
+                //console.log("Delay finished... executing action.")
+                let voiceFinished
+    
+                if (voiceover.length > 0) {
+                    voiceFinished = this.narrator.speak(voiceover)
+                }
+    
+                await this.executeAction(action, args)
+                await voiceFinished
+    
+                if (wait > 0) {
+                    console.log("Waiting for: ", wait)
+                    await this.executeAction(Action.WAIT, [wait])
+                    console.log("Wait finished...")
+                }   
+    
+                //console.log("Wait finished...")
+                this.step = index + 1
+                this.controller.syncState()
+            }
+            index++
+
+            if (index >= steps.length) {
+                this.controller.handleStop()
+            }
+        }
+    }
+
+    /* 
     async navigateToTarget(targetURL) {
         const tabId = await getCurrentTabId()
         const tabUrl = await getCurrentTabUrl()
@@ -41,59 +93,5 @@ export class Player {
         })
     }
 
-    async play(script, from = 0, component = null) {
-        // We only redirect if the script is not already playing
-        if (from === 0) {
-            await this.navigateToTarget(script.target) // Not awaiting (some issue with the async/await)
-            // Temporary solution:
-            await this.executeAction(ACTION.WAIT, [1000]) // Weird bug (it works but idk why)
-        }
-
-        // This scripts creation could be automated with user natural input, developing a kind of "script editor" UI.
-        const steps = script.steps
-        let index = 0
-        // We're using a 'for' because forEach cannot handle 'awaits'
-        for (const {action, args, delay, wait, voiceover} of steps) {
-            if (this.pause) {
-                this.pause = false
-                break
-            }
-            
-            //console.log("Script started:", voiceover)
-            if (index >= from) {
-                if (delay > 0) {
-                    await this.executeAction(ACTION.WAIT, [delay])
-                }
-    
-                //console.log("Delay finished... executing action.")
-                let voiceFinished
-    
-                if (voiceover.length > 0) {
-                    voiceFinished = this.narrator.speak(voiceover)
-                }
-    
-                await this.executeAction(action, args)
-                await voiceFinished
-    
-                if (wait > 0) {
-                    await this.executeAction(ACTION.WAIT, [wait])
-                }   
-    
-                //console.log("Wait finished...")
-                component.setCurrentStep(index + 1)
-            }
-            index++
-        }
-    }
-
-    stop() {
-        this.pause = true
-    }
-
-    async record() {
-        this.messenger.send({message: Message.RECORDING__STARTED}, (response) => {
-            console.log('Response received:', response)
-        })
-    }
-
+    */
 }

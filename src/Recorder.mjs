@@ -1,114 +1,61 @@
+import { Narrator } from "./Narrator.mjs"
 import { Messenger } from "./Messenger.mjs"
 import { Message } from "./Message.mjs"
 import { Context } from "./Context.mjs"
+
 import { getCurrentTabId } from "./utils/tabs.utils.js"
+import { initializeOffscreen } from "./utils/offscreen.utils.js"
 
 export class Recorder {
-    constructor() {
-        this.messenger = new Messenger()
-        this.recording = null
+    constructor(controller) {
+        this.controller = controller
+
+        this.isRecording = false
+
         this.recorder = null
+        this.config = {}
         this.data = []
-    }
 
-    async setup(filename) {
-        // Initialize offscreen document
-        const contexts = await chrome.runtime.getContexts({})
-        const offscreen = contexts.find(c => {
-            c.contextType === 'OFFSCREEN_DOCUMENT'
-        })
-
-        if (!offscreen) await this.initializeOffscreen()
-        else this.recording = offscreen.documentUrl.endsWith('#recording')
-
-        // Initialize recording
-        const tabId = await getCurrentTabId()
-        const streamId = await chrome.tabCapture.getMediaStreamId({ targetTabId: tabId })
-
-        // Send message to offscreen document 
-        // We have to execute this in another context to avoid cancelling the recording
-        // if the popup is closed
-        this.messenger.send({
-            message: Message.START_RECORDING, 
-            target: Context.OFFSCREEN_DOCUMENT, 
-            data: streamId,
-            filename: filename
-        }, () => null)
-
-        return streamId
+        this.narrator = new Narrator()
     }
 
     async start(streamId, filename) {
-        let resolution = {height: 1080, width: 1920}
-        let format = 'mp4';
+        console.log("RECORDER: Starting recording...")
 
-        if (this.recorder?.state === 'recording') {
-            throw new Error('Recording already in progress');
+        const combinedMedia = await this.setupCombinedMediaStream(streamId)
+        this.recorder = new MediaRecorder(combinedMedia, {mimeType: `video/${this.config.format}`})
+        
+        this.recorder.ondataavailable = (event) => {
+            this.data.push(event.data)
+            this.controller.syncState()
         }
-    
-        const media = await navigator.mediaDevices.getUserMedia({
-            audio: {
-                mandatory: {
-                    chromeMediaSource: 'tab',
-                    chromeMediaSourceId: streamId
-                }
-            },
-            video: {
-                mandatory: {
-                    chromeMediaSource: 'tab',
-                    chromeMediaSourceId: streamId,
-                    minWidth: resolution.width,
-                    maxWidth: resolution.width,
-                    minHeight: resolution.height,
-                    maxHeight: resolution.height,
-                    frameRate: 60
-                }
-            }
-        })
-    
-        // Audio Setup (esto funciona)
-        const output = new AudioContext()
-        const source = output.createMediaStreamSource(media)
-        source.connect(output.destination)
-    
-        // Start recording
-        this.recorder = new MediaRecorder(media, {mimeType: `video/${format}`})
-        this.recorder.ondataavailable = (event) => this.data.push(event.data)
+
         this.recorder.onstop = () => {
-            const blob = new Blob(this.data, {type: `video/${format}`})
+            const blob = new Blob(this.data, {type: `video/${this.config.format}`})
             const url = URL.createObjectURL(blob)
     
             // Download the recorded video
-            this.downloadVideo(url, filename, format)
+            this.downloadVideo(url, filename, this.config.format)
     
             // Open a new tab with the recorded video
             this.previewVideo(url)
+
+            this.recorder.stop()
     
             // Reset the recorder and data array
             this.recorder = undefined
             this.data = []
+            this.controller.syncState()
         }
-    
+
         this.recorder.start()
-        window.location.hash = 'recording'
-    
-        setTimeout(() => this.stop(), 10000)
     }
 
     async stop() {
         this.recorder.stop()
         this.recorder.stream.getTracks().forEach(track => track.stop())
-        window.location.hash = ''
     }
-
-    async initializeOffscreen() {
-        await chrome.offscreen.createDocument({
-            url: 'public/offscreens/mediaRecorder/offscreen.html',
-            reasons: ['USER_MEDIA'],
-            justification: 'Recording from chrome.tabCapture API'
-        })
-    }
-
+    
     downloadVideo(url, filename, format) {
         const a = document.createElement('a')
         a.href = url
@@ -121,4 +68,104 @@ export class Recorder {
     previewVideo(url) {
         window.open(url, '_blank')
     }
+
+    async setupCombinedMediaStream(streamId) {
+        // Video
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                mandatory: {
+                    chromeMediaSource: 'tab',
+                    chromeMediaSourceId: streamId
+                }
+            },
+            video: {
+                mandatory: {
+                    chromeMediaSource: 'tab',
+                    chromeMediaSourceId: streamId,
+                    minWidth: this.config.resolution.width,
+                    maxWidth: this.config.resolution.width,
+                    minHeight: this.config.resolution.height,
+                    maxHeight: this.config.resolution.height,
+                    frameRate: this.config.fps
+                }
+            }
+        })
+
+        // Audio (Speech)
+        const speechContext = new AudioContext()
+        const speechDestination = speechContext.createMediaStreamDestination()
+
+        const oscillator = speechContext.createOscillator()
+        oscillator.connect(speechDestination)
+        oscillator.start()
+
+        //speechDestination.connect(speechContext.destination)
+
+        // Combined stream
+        const combinedStream = new MediaStream()
+
+        // Add video track
+        mediaStream.getVideoTracks().forEach(track => {
+            combinedStream.addTrack(track)
+        })
+
+        // Add audio track
+        /* mediaStream.getAudioTracks().forEach(track => {
+            combinedStream.addTrack(track)
+        }) */
+
+        // Add audio track
+        speechDestination.stream.getAudioTracks().forEach(track => {
+            combinedStream.addTrack(track)
+        })
+
+        return combinedStream
+    }
+
+    async play(script, from = 0, component = null) {
+        // We only redirect if the script is not already playing
+        if (from === 0) {
+            await this.navigateToTarget(script.target) // Not awaiting (some issue with the async/await)
+            // Temporary solution:
+            await this.executeAction(ACTION.WAIT, [1000]) // Weird bug (it works but idk why)
+        }
+
+        // This scripts creation could be automated with user natural input, developing a kind of "script editor" UI.
+        const steps = script.steps
+        let index = 0
+        // We're using a 'for' because forEach cannot handle 'awaits'
+        for (const {action, args, delay, wait, voiceover} of steps) {
+            if (this.pause) {
+                this.pause = false
+                break
+            }
+            
+            //console.log("Script started:", voiceover)
+            if (index >= from) {
+                if (delay > 0) {
+                    await this.executeAction(ACTION.WAIT, [delay])
+                }
+    
+                //console.log("Delay finished... executing action.")
+                let voiceFinished
+    
+                if (voiceover.length > 0) {
+                    voiceFinished = this.narrator.speak(voiceover)
+                }
+    
+                await this.executeAction(action, args)
+                await voiceFinished
+    
+                if (wait > 0) {
+                    await this.executeAction(ACTION.WAIT, [wait])
+                }   
+    
+                //console.log("Wait finished...")
+                component.setCurrentStep(index + 1)
+            }
+            index++
+        }
+    }
+
+   
 }
