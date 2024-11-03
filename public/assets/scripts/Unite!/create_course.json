@@ -188,6 +188,13 @@
             "delay": 0,
             "wait": 500,
             "voiceover": "Le damos al botón de Save para guardar el nuevo curso... Y de momento eso sería todo."
+        },
+        {
+            "action": "REMOVE_CURSOR",
+            "args": [],
+            "delay": 0,
+            "wait": 1500,
+            "voiceover": ""
         }
     ]
 }
