@@ -4,7 +4,11 @@
   "description": "Agora Trainer is a Chrome extension that automates website interactions for training purposes. It records these interactions as video tutorials with synchronized audio narration, helping users understand website functionality through guided demonstrations.",
   "main": "public/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-background-service": "rollup src/services/background.service.js --file dist/background.service.js --format iife",
+    "build-player-api": "rollup src/api/player.api.js --file dist/player.api.js --format iife",
+    "build-recorder-api": "rollup src/api/recorder.api.js --file dist/recorder.api.js --format iife",
+    "build-storage-api": "rollup src/api/storage.api.js --file dist/storage.api.js --format iife",
+    "build": "npm run build-background-service && npm run build-player-api && npm run build-recorder-api && npm run build-storage-api"
   },
   "repository": {
     "type": "git",
@@ -24,5 +28,8 @@
   "homepage": "https://github.com/KinoGlazPrusia/agora-trainer#readme",
   "dependencies": {
     "plain-reactive": "^1.1.8"
+  },
+  "devDependencies": {
+    "rollup": "^4.24.3"
   }
 }

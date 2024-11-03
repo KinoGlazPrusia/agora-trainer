@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Agora Trainer",
+    "name": "Agora Trainer Structured",
     "version": "1.0",
     "permissions": [
         "activeTab", 
@@ -10,13 +10,25 @@
         "tabs", 
         "tabCapture", 
         "desktopCapture",
-        "offscreen"
+        "offscreen",
+        "audioCapture"
     ],
-    "host_permissions": ["http://*/*","https://*/*"],
+    "host_permissions": ["<all_urls>"],
     "description": "An automated video learning tips generator",
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": [
+                "dist/player.api.js",
+                "src/api/scripting.api.js",
+                "src/api/interaction.api.js",
+                "src/api/narrator.api.js"
+            ]
+        }
+    ],
     "background": {
-        "service_worker": "public/service.js",
-        "type": "module"
+        "service_worker": "dist/background.service.js",
+        "persistent": true
     },
     "action": {
         "default_popup": "public/index.html"
