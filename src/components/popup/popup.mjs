@@ -48,10 +48,6 @@ class Popup extends PlainComponent {
         this.$('.script-input').onchange = () => this.uploadScript()
     }
 
-    messageListeners() {
-        // Implement message listeners here (mainly to update UI when playing, etc, based on play state)
-    }
-
     async loadScripts() {
         return new Promise(resolve => {
             chrome.storage.local.get(['scripts'], (res) => {
