@@ -10,10 +10,6 @@ class Script extends PlainComponent {
     constructor() {
         super('script-component', '../src/components/script/script.css')
 
-        this.player = new Player()
-        this.recorder = new Recorder()
-        this.messenger = new Messenger()
-
         this.STATUS = {
             IS_INACTIVE: -1,
             IS_PLAYING: 0,
@@ -24,6 +20,9 @@ class Script extends PlainComponent {
         this.script = new PlainState(this.parseScript(this.dataset.script), this)
         this.status = new PlainState(this.STATUS.IS_INACTIVE, this)
         this.currentStep = new PlainState(0, this)
+
+        this.messageListeners()
+        this.fetchInitialState()
     }
 
     template() {
@@ -66,7 +65,33 @@ class Script extends PlainComponent {
         this.$('.script-record-button').onclick = () => this.handleRecord()
     }
 
-    handlePlay() {
+    fetchInitialState() {
+        chrome.runtime.sendMessage(
+            new Message(Message.GET_STATE, Context.UI_SERVICE, this.id).get(), 
+            (response) => {
+                const state = response
+                this.status.setState(state.status)
+            }
+        )
+        // Action State
+        // Progress State
+    }
+
+    messageListeners() {
+        chrome.runtime.onMessage.addListener((message, sender, response) => {
+            if (message.target === Context.POPUP) {
+                switch (message.code) {
+                    
+                    case Message.STOP:
+                        console.log("The player is requested to be stopped.")
+                        this.reset()
+                        break
+                }
+            }
+        })
+    }
+
+    handlePlay(isRecording = false) {
         chrome.runtime.sendMessage(new Message(
             Message.PLAY, 
             Context.PLAYER_SERVICE, 
@@ -79,42 +104,26 @@ class Script extends PlainComponent {
             width: 400,
             height: 150
         }) */
-        // this.status.setState(this.STATUS.IS_PLAYING)
-        // this.player.play(this.script.getState(), this.currentStep.getState(), this)
-        /* console.log("HANDLE PLAY")
-        const message = new Message(
-            Message.START_PLAYING,
-            Context.BACKGROUND,
-            {script: JSON.stringify(this.script.getState())} // Los mensajes se pasan serializados por lo tanto habría que hacer un stringify
-        ).get()
 
-        console.log("MESSAGE", message)
-
-        this.messenger.send(message) */
+        if (isRecording) return
+        this.status.setState(this.STATUS.IS_PLAYING)
+        this.syncState()
     }
 
     handleStop() {
-        // If status is already paused, then it becomes inactive
-        /* if (this.status.getState() === this.STATUS.IS_PAUSED) {
-            this.handleReset()
-            return
-        }
-
-        // If the status is inactive, nothing happens
-        if (this.status.getState() == this.STATUS.IS_INACTIVE) return 
-
-        this.status.setState(this.STATUS.IS_PAUSED)
-        this.player.stop() */
-
         chrome.runtime.sendMessage(new Message(
             Message.PAUSE, 
             Context.PLAYER_SERVICE
         ).get())
+
+        this.status.setState(this.STATUS.IS_PAUSED)
+        this.syncState()
     }
 
     handleReset() {
         this.status.setState(this.STATUS.IS_INACTIVE)
         this.currentStep.setState(0, false)
+        this.syncState()
     }
 
     handleRecord() {
@@ -125,6 +134,8 @@ class Script extends PlainComponent {
         ).get())
 
         this.handlePlay()
+        this.status.setState(this.STATUS.IS_RECORDING)
+        this.syncState()
     }
 
     setCurrentStep(index) {
@@ -147,7 +158,6 @@ class Script extends PlainComponent {
     }
 
     reset() {
-        this.currentStep.setState(0, false)
         this.status.setState(this.STATUS.IS_INACTIVE)
     }
 
@@ -164,6 +174,19 @@ class Script extends PlainComponent {
 
     parseAction(action) {
         return Action[action]
+    }
+
+    syncState() {
+        const state = {
+            status: this.status.getState(),
+            progress: this.currentStep.getState(),
+        }
+
+        chrome.runtime.sendMessage(new Message(
+            Message.SET_STATE,
+            Context.UI_SERVICE,
+            {state: state, key: this.id}
+        ).get())
     }
 }
 
