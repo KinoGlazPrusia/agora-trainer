@@ -65,12 +65,11 @@
     }
 
     class Context  {
-        static UI = 'UI'
         static POPUP = 'POPUP'
-        static CONTENT_SCRIPT = 'CONTENT_SCRIPT'
-        static SERVICE = 'SERVICE'
         static BACKGROUND = 'BACKGROUND'
         static OFFSCREEN_DOCUMENT = 'OFFSCREEN_DOCUMENT'
+
+        static UI_SERVICE = 'UI'
 
         static PLAYER_SERVICE = 'PLAYER_SERVICE'
         static PLAYER_API = 'PLAYER_API'

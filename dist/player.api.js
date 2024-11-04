@@ -296,12 +296,11 @@
     }
 
     class Context  {
-        static UI = 'UI'
         static POPUP = 'POPUP'
-        static CONTENT_SCRIPT = 'CONTENT_SCRIPT'
-        static SERVICE = 'SERVICE'
         static BACKGROUND = 'BACKGROUND'
         static OFFSCREEN_DOCUMENT = 'OFFSCREEN_DOCUMENT'
+
+        static UI_SERVICE = 'UI'
 
         static PLAYER_SERVICE = 'PLAYER_SERVICE'
         static PLAYER_API = 'PLAYER_API'
@@ -353,7 +352,9 @@
         
         /* LISTENERS */
         setupListeners() {
+            console.log("API");
             chrome.runtime.onMessage.addListener((message, sender, response) => {
+                console.log(message);
                 if (message.target === Context.PLAYER_API) {
                     switch (message.code) {
                         case Message.PLAY:
@@ -410,6 +411,7 @@
 
             // We emit a message so that if the recorder is running, it can stop recording
             chrome.runtime.sendMessage(new Message(Message.STOP_RECORDING, Context.RECORDER_SERVICE).get());
+            chrome.runtime.sendMessage(new Message(Message.STOP, Context.POPUP).get());
         }
 
         /* STATE MANAGEMENT */

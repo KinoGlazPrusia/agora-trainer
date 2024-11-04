@@ -43,12 +43,11 @@
     }
 
     class Context  {
-        static UI = 'UI'
         static POPUP = 'POPUP'
-        static CONTENT_SCRIPT = 'CONTENT_SCRIPT'
-        static SERVICE = 'SERVICE'
         static BACKGROUND = 'BACKGROUND'
         static OFFSCREEN_DOCUMENT = 'OFFSCREEN_DOCUMENT'
+
+        static UI_SERVICE = 'UI'
 
         static PLAYER_SERVICE = 'PLAYER_SERVICE'
         static PLAYER_API = 'PLAYER_API'
@@ -97,7 +96,6 @@
             chrome.runtime.onMessage.addListener((message, sender, response) => {
                 if (message.target === Context.PLAYER_SERVICE) {
                     switch (message.code) {
-
                         /* STATTE MANAGEMENT */
                         case Message.GET_STATE:
                             console.log("The player instance has been fetched with a sync state.");
@@ -106,7 +104,7 @@
 
                         case Message.SET_STATE:
                             this.setState(message.data.state, message.data.key ?? null);
-                            console.log("New state:", this.getState());
+                            // console.log("New state:", this.getState())
                             break
 
                         /* PLAYER MANAGEMENT */
@@ -128,7 +126,7 @@
         }
 
         play() {
-            chrome.tabs.query({active: true}, (tabs) => {
+            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
                 chrome.tabs.sendMessage(
                     tabs[0].id, 
                     new Message(Message.PLAY, Context.PLAYER_API, this.getState().script).get(),
@@ -139,8 +137,7 @@
         }
 
         pause() {
-            console.log("Pausing...");
-            chrome.tabs.query({active: true}, (tabs) => {
+            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
                 chrome.tabs.sendMessage(
                     tabs[0].id, 
                     new Message(Message.PAUSE, Context.PLAYER_API).get(),
@@ -224,7 +221,7 @@
         }
 
         record(scriptName) {
-            chrome.tabs.query({active: true}, async (tabs) => {
+            chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
                 // The get streamId logic should be moved to other place
                 const [streamId, filename] = await this.setup(tabs[0].id, scriptName);
                 
@@ -237,7 +234,7 @@
         }
 
         stop() {
-            chrome.tabs.query({active: true}, async (tabs) => {
+            chrome.tabs.query({active: true, currentWindow: true}, async (tabs) => {
                 chrome.runtime.sendMessage(
                     new Message(Message.STOP_RECORDING, Context.RECORDER_API).get(),
                     (response) => {
@@ -269,6 +266,53 @@
         }
     }
 
+    class UIService {
+        constructor() {
+            this.states = {};
+
+            /* EXAMPLE:
+            "script-component-1": {
+                status: 0, // 0: inactive, 1: playing, 2: paused, 3: recording
+                progress: 35 // 0 to 100 (%)
+            }
+            */
+
+            this.setupListeners();
+        }
+
+        setState(state, key) {
+            this.states[key] = state;
+        }
+
+        getState(componentId) {
+            if (!this.states[componentId]) {
+                this.states[componentId] = null;
+            }
+
+            return this.states[componentId] 
+        }
+
+        setupListeners() {
+            // FETCH STATE
+            chrome.runtime.onMessage.addListener((message, sender, response) => {
+                if (message.target === Context.UI_SERVICE) {
+                    switch (message.code) {
+                        /* STATTE MANAGEMENT */
+                        case Message.GET_STATE:
+                            console.log("The UI component has been fetched with a sync state.");
+                            response(this.getState(message.data));
+                            break
+
+                        case Message.SET_STATE:
+                            console.log("The state has been updated");
+                            this.setState(message.data.state, message.data.key);
+                            break
+                    }
+                }
+            });
+        }
+    }
+
     // SERVICES INITIALIZATION
     /* We'll create an instance for each service within this background service */
 
@@ -276,6 +320,7 @@
     chrome.runtime.onInstalled.addListener(async () => {
         new PlayService();
         new RecordService();
+        new UIService();
     });
 
 })();
