@@ -91,6 +91,7 @@ class PlayerAPI {
 
         // We emit a message so that if the recorder is running, it can stop recording
         chrome.runtime.sendMessage(new Message(Message.STOP_RECORDING, Context.RECORDER_SERVICE).get())
+        chrome.runtime.sendMessage(new Message(Message.STOP, Context.POPUP).get())
     }
 
     /* STATE MANAGEMENT */
@@ -115,4 +116,4 @@ class PlayerAPI {
     }
 }
 
-var playerAPI = new PlayerAPI()
+const playerAPI = new PlayerAPI()
