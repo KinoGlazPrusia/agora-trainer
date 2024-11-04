@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Agora Trainer Structured",
+    "name": "Agora Trainer",
     "version": "1.0",
     "permissions": [
         "activeTab", 
