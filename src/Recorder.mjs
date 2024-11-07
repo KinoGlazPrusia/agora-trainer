@@ -94,6 +94,8 @@ export class Recorder {
         // Audio (Speech)
         const speechContext = new AudioContext()
         const speechDestination = speechContext.createMediaStreamDestination()
+        /* const speechSource = speechContext.createMediaElementSource(this.narrator.narrator)
+        speechSource.connect(speechDestination) */
 
         const oscillator = speechContext.createOscillator()
         oscillator.connect(speechDestination)
@@ -119,53 +121,6 @@ export class Recorder {
             combinedStream.addTrack(track)
         })
 
-        return combinedStream
+        return mediaStream
     }
-
-    async play(script, from = 0, component = null) {
-        // We only redirect if the script is not already playing
-        if (from === 0) {
-            await this.navigateToTarget(script.target) // Not awaiting (some issue with the async/await)
-            // Temporary solution:
-            await this.executeAction(ACTION.WAIT, [1000]) // Weird bug (it works but idk why)
-        }
-
-        // This scripts creation could be automated with user natural input, developing a kind of "script editor" UI.
-        const steps = script.steps
-        let index = 0
-        // We're using a 'for' because forEach cannot handle 'awaits'
-        for (const {action, args, delay, wait, voiceover} of steps) {
-            if (this.pause) {
-                this.pause = false
-                break
-            }
-            
-            //console.log("Script started:", voiceover)
-            if (index >= from) {
-                if (delay > 0) {
-                    await this.executeAction(ACTION.WAIT, [delay])
-                }
-    
-                //console.log("Delay finished... executing action.")
-                let voiceFinished
-    
-                if (voiceover.length > 0) {
-                    voiceFinished = this.narrator.speak(voiceover)
-                }
-    
-                await this.executeAction(action, args)
-                await voiceFinished
-    
-                if (wait > 0) {
-                    await this.executeAction(ACTION.WAIT, [wait])
-                }   
-    
-                //console.log("Wait finished...")
-                component.setCurrentStep(index + 1)
-            }
-            index++
-        }
-    }
-
-   
 }
