@@ -352,9 +352,7 @@
         
         /* LISTENERS */
         setupListeners() {
-            console.log("API");
             chrome.runtime.onMessage.addListener((message, sender, response) => {
-                console.log(message);
                 if (message.target === Context.PLAYER_API) {
                     switch (message.code) {
                         case Message.PLAY:
