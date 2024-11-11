@@ -1,7 +1,7 @@
 export class StorageAPI {
     async handleLoadedScript(data) {
         //this.clearStorage()
-        console.log("Storage API: handleLoadedScript")
+        console.log("Storage API: Loading script")
         try {
             if (await this.storageIsEmpty()) {
                 await this.initializeStorage('scripts', [data])
@@ -20,6 +20,17 @@ export class StorageAPI {
         }
     }
 
+    async handleDeleteScript(name) {
+        console.log("Storage API: Removing script")
+        try {
+            await this.removeScript(name)
+        }
+
+        catch (error) {
+            console.error(error)
+        }
+    }
+
     async addScript(data) {
         return new Promise(resolve => {
             chrome.storage.local.get(['scripts'], (res) => {
@@ -32,6 +43,18 @@ export class StorageAPI {
         })
     }
 
+    async removeScript(name) {
+        return new Promise(resolve => {
+            chrome.storage.local.get(['scripts'], (res) => {
+                const scripts = res.scripts
+                const updatedScripts = scripts.filter(script => script.name !== name)
+                chrome.storage.local.set({['scripts']: updatedScripts}, () => {
+                    resolve()
+                })
+            })
+        })
+    } 
+
     async initializeStorage(key, value) {
         return new Promise(resolve => {
             chrome.storage.local.set({[key]: value}, () => {
@@ -39,7 +62,6 @@ export class StorageAPI {
             })
         })
     }
-    
 
     clearStorage() {
         chrome.storage.local.clear()
