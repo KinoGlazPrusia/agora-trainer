@@ -2,6 +2,8 @@
 
 /* WRAPPER */
 .script-component-wrapper {
+    position: relative;
+
     width: 100%;
     height: 75px;
 
@@ -21,6 +23,9 @@
 
 /* LAYOUT */
 .right {
+    padding-right: 2em;
+    box-sizing: border-box;
+
     height: 100%;
     width: 100%;
 
@@ -142,6 +147,27 @@
 .script-record-button.active {
     color: rgb(134, 46, 46);
     animation: recording 2s infinite ease-in-out;
+}
+
+/* DELETE */
+.script-delete-button {
+    cursor: pointer;
+    user-select: none;
+
+    padding: 0.25em;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    color: darkgray;
+    font-size: 1.5em;
+
+    transition: 300ms;
+}
+
+.script-delete-button:hover {
+    color: rgb(134, 46, 46);
 }
 
 /* SCRIPT PROGRESS */

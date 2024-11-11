@@ -37,6 +37,20 @@ class ScriptList extends PlainComponent {
 
         return filtered
     }
+
+    async deleteScript(id, name) {
+        await this.parentComponent.deleteScript(name)
+
+        console.log("Removing element with id: " + id)
+        try {
+            const updatedScripts = this.scripts.getState().filter(script => script.id !== id)
+            this.scripts.setState(updatedScripts)
+        }
+
+        catch (error) {
+            console.error(error)
+        }
+    }
 }
 
 export default window.customElements.define('script-list-component', ScriptList)

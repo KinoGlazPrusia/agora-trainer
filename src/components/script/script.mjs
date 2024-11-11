@@ -52,10 +52,13 @@ class Script extends PlainComponent {
                 </div>
 
                 <!-- SCRIPT PROGRESS -->
-                <div class="script-progress-track">
+                <!-- <div class="script-progress-track">
                     <div class="script-progress-thumb"></div>
-                </div>
+                </div> -->
             </div>
+
+            <!-- DELETE BUTTON -->
+            <span class="script-delete-button delete-icon material-symbols-outlined">close</span>
         `
     }
 
@@ -63,6 +66,7 @@ class Script extends PlainComponent {
         this.$('.script-play-button').onclick = () => this.handlePlay()
         this.$('.script-stop-button').onclick = () => this.handleStop()
         this.$('.script-record-button').onclick = () => this.handleRecord()
+        this.$('.script-delete-button').onclick = () => this.delete()
     }
 
     fetchInitialState() {
@@ -187,6 +191,10 @@ class Script extends PlainComponent {
             Context.UI_SERVICE,
             {state: state, key: this.id}
         ).get())
+    }
+
+    delete() {
+        this.parentComponent.deleteScript(this.id, this.script.getState().name)
     }
 }
 

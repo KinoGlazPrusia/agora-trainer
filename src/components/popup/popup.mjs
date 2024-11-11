@@ -78,6 +78,17 @@ class Popup extends PlainComponent {
         })
     }
 
+    async deleteScript(name) {
+        console.log("Deleting script from storage with name: " + name)
+        try {
+            this.storage.handleDeleteScript(name)
+        }
+
+        catch (error) {
+            console.error(error)
+        }
+    }
+
     addScript(data) {
         const scriptComponent = document.createElement('script-component')
         scriptComponent.id = `script-component-${this.scripts.getState().length + 1}`
